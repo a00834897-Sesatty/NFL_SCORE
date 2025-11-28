@@ -1,4 +1,3 @@
-%%writefile app.py
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -269,3 +268,4 @@ with tab3:
                   color=kpi_col, color_continuous_scale="Viridis")
     fig2.update_layout(xaxis_tickangle=-45)
     st.plotly_chart(fig2, use_container_width=True)
+
