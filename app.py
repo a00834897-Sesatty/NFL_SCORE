@@ -1,3 +1,4 @@
+%%writefile app.py
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -224,7 +225,11 @@ with tab2:
     with c1:
         tgrp = st.selectbox("Agrupar por", ["Month-Year", "Week", "Year"])
     with c2:
-        metric = st.selectbox("KPI", ["Games", "Avg Total Points"])
+        metric = st.selectbox(
+            "KPI",
+            ["Games", "Avg Total Points"],
+            key="time_kpi"   # 🔥 FIX 1: ID único
+        )
 
     df_time = df.groupby(tgrp).agg(
         Games=("total_points", "count"),
@@ -244,7 +249,12 @@ with tab3:
         unsafe_allow_html=True
     )
 
-    stat_label = st.selectbox("KPI", ["Games", "Avg Total Points"])
+    stat_label = st.selectbox(
+        "KPI",
+        ["Games", "Avg Total Points"],
+        key="stadium_kpi"   # 🔥 FIX 2: ID único
+    )
+
     kpi_col = "Games" if stat_label == "Games" else "AvgTotalPoints"
 
     df_geo = df.groupby("stadium").agg(
@@ -259,4 +269,3 @@ with tab3:
                   color=kpi_col, color_continuous_scale="Viridis")
     fig2.update_layout(xaxis_tickangle=-45)
     st.plotly_chart(fig2, use_container_width=True)
-
