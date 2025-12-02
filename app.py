@@ -18,12 +18,12 @@ st.markdown("""
 
 /* Casi cualquier elemento de texto */
 html, body, [class^="css"], [class*="css"] {
-    color: white !important;
+    color: #ffffff;
 }
 
 /* Tabs más legibles */
 .stTabs [data-baseweb="tab"] {
-    color: white !important;
+    color: #ffffff;
     font-weight: 600;
 }
 </style>
@@ -240,5 +240,6 @@ with tab3:
                   color=kpi_col, color_continuous_scale="Viridis")
     fig2.update_layout(xaxis_tickangle=-45)
     st.plotly_chart(fig2, use_container_width=True)
+
 
 
