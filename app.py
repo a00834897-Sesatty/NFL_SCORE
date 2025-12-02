@@ -13,7 +13,7 @@ st.markdown("""
 /* Fondo oscuro y texto blanco en toda la app */
 [data-testid="stAppViewContainer"] {
     background-color: #050816;
-    color: white ¡important;
+    color: #ffffff;
 }
 
 /* Casi cualquier elemento de texto */
@@ -240,4 +240,5 @@ with tab3:
                   color=kpi_col, color_continuous_scale="Viridis")
     fig2.update_layout(xaxis_tickangle=-45)
     st.plotly_chart(fig2, use_container_width=True)
+
 
