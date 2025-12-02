@@ -11,18 +11,42 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Fondo oscuro sencillo
-st.markdown(
-    """
-    <style>
-    [data-testid="stAppViewContainer"] {
-        background-color: #050816;
-        color: white;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# ---------------- CSS GLOBAL ----------------
+st.markdown("""
+<style>
+
+[data-testid="stAppViewContainer"] {
+    background-color: #050816;
+    color: white;
+}
+
+/* TITULOS */
+h1, h2, h3, h4, h5, h6 {
+    color: white !important;
+}
+
+/* LABELS DE SELECTBOX, SLIDER, RADIO, CHECKBOX */
+label, .stSelectbox label, .stSlider label, .css-1n76uvr, .css-q8sbsg {
+    color: white !important;
+}
+
+/* TABS */
+.stTabs [data-baseweb="tab"] {
+    color: white !important;
+    font-weight: 600;
+}
+
+.stTabs [data-baseweb="tab"]:hover {
+    color: #e5e5e5 !important;
+}
+
+/* MÉTRICAS */
+.stMetric label, .stMetric div {
+    color: white !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 # ---------------- TÍTULO + LOGO ----------------
 col_title, col_logo = st.columns([0.85, 0.15])
@@ -32,9 +56,9 @@ with col_title:
 
 with col_logo:
     try:
-        st.image("LOGO_NFL.png", width=90)
+        st.image("LOGO_NFL.png", width=120)
     except Exception:
-        pass  # si no está el logo, no pasa nada
+        pass
 
 # ---------------- CARGA DE DATOS ----------------
 @st.cache_data
@@ -46,7 +70,6 @@ def load_data():
 
     df = pd.read_csv(file_name)
 
-    # Columnas requeridas
     required = [
         "score_home", "score_away", "season", "week",
         "over_under_line", "spread_favorite", "team_home", "team_away"
@@ -56,12 +79,10 @@ def load_data():
         st.error(f"Faltan columnas esenciales: {', '.join(missing)}")
         raise SystemExit("Columnas faltantes")
 
-    # A numérico
     for c in ["season", "week", "score_home", "score_away",
               "over_under_line", "spread_favorite"]:
         df[c] = pd.to_numeric(df[c], errors="coerce")
 
-    # Fechas
     if "schedule_date" in df.columns:
         df["schedule_date"] = pd.to_datetime(df["schedule_date"], errors="coerce")
         df["Year"] = df["schedule_date"].dt.year
@@ -72,11 +93,9 @@ def load_data():
         df["Month-Year"] = df["season"].astype(str)
         df["Week"] = df["week"]
 
-    # Derivadas
     df["total_points"] = df["score_home"] + df["score_away"]
     df["margin_home"] = df["score_home"] - df["score_away"]
 
-    # Fase
     if "schedule_playoff" in df.columns:
         playoff = df["schedule_playoff"].astype(str).str.lower().isin(
             ["1", "true", "yes", "y", "si", "sí"]
@@ -85,7 +104,6 @@ def load_data():
     else:
         df["Phase"] = "Regular"
 
-    # Stadium y equipos
     df["stadium"] = df.get("stadium", "Unknown").fillna("Unknown")
     df["team_home"] = df["team_home"].astype(str)
     df["team_away"] = df["team_away"].astype(str)
@@ -142,15 +160,13 @@ else:
 st.markdown("---")
 
 # ---------------- TABS ----------------
-tab1, tab2, tab3, tab4 = st.tabs(
-    ["Enfrentamientos", "Performance Over Time", "Stadium Analysis", "Team Analysis"]
+tab1, tab2, tab3 = st.tabs(
+    ["Enfrentamientos", "Performance Over Time", "Stadium Analysis"]
 )
 
-# Colores simples para cada tab
-color_tab1 = "#DC2626"  # rojo
-color_tab2 = "#2563EB"  # azul
-color_tab3 = "#16A34A"  # verde
-color_tab4 = "#7C3AED"  # morado
+color_tab1 = "#DC2626"
+color_tab2 = "#2563EB"
+color_tab3 = "#16A34A"
 
 # ===== TAB 1: ENFRENTAMIENTOS =====
 with tab1:
@@ -209,6 +225,7 @@ with tab1:
                 cols.append("schedule_date")
             cols += ["season", "week", "stadium", "team_home", "score_home",
                      "score_away", "team_away", "total_points", "Phase", "winner"]
+
             st.markdown("#### Detalle de partidos")
             st.dataframe(h2h[cols], use_container_width=True)
 
@@ -227,7 +244,7 @@ with tab2:
         metric = st.selectbox(
             "KPI",
             ["Games", "Avg Total Points"],
-            key="time_kpi"   # 🔥 FIX 1: ID único
+            key="time_kpi"
         )
 
     df_time = df.groupby(tgrp).agg(
@@ -251,7 +268,7 @@ with tab3:
     stat_label = st.selectbox(
         "KPI",
         ["Games", "Avg Total Points"],
-        key="stadium_kpi"   # 🔥 FIX 2: ID único
+        key="stadium_kpi"
     )
 
     kpi_col = "Games" if stat_label == "Games" else "AvgTotalPoints"
@@ -263,9 +280,10 @@ with tab3:
 
     df_geo = df_geo.sort_values(kpi_col, ascending=False).head(20)
 
-    fig2 = px.bar(df_geo, x="stadium", y=kpi_col,
-                  title=f"{stat_label} por Stadium",
-                  color=kpi_col, color_continuous_scale="Viridis")
+    fig2 = px.bar(
+        df_geo, x="stadium", y=kpi_col,
+        title=f"{stat_label} por Stadium",
+        color=kpi_col, color_continuous_scale="Viridis"
+    )
     fig2.update_layout(xaxis_tickangle=-45)
     st.plotly_chart(fig2, use_container_width=True)
-
