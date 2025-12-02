@@ -259,7 +259,11 @@ with tab2:
 
 # ===== TAB 3: STADIUM ANALYSIS =====
 with tab3:
-    
+    st.markdown(
+        f"<div style='background-color:{color_tab3}; padding:6px 10px; border-radius:6px;'>"
+        "<b>Stadium Analysis</b></div>",
+        unsafe_allow_html=True
+    )
 
     stat_label = st.selectbox(
         "KPI",
@@ -283,4 +287,5 @@ with tab3:
     )
     fig2.update_layout(xaxis_tickangle=-45)
     st.plotly_chart(fig2, use_container_width=True)
+
 
