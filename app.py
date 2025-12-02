@@ -4,33 +4,53 @@ import numpy as np
 import plotly.express as px
 import os
 
-# -------- CONFIG PÁGINA --------
-st.set_page_config(page_title="Dashboard NFL", layout="wide")
+# ---------------- CONFIG PÁGINA ----------------
+st.set_page_config(
+    page_title="Dashboard NFL",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# -------- ESTILOS (simple) --------
+# ---------------- CSS GLOBAL ----------------
 st.markdown("""
 <style>
-/* Fondo oscuro y texto blanco en toda la app */
+
 [data-testid="stAppViewContainer"] {
     background-color: #050816;
-    color: #ffffff;
+    color: white;
 }
 
-/* Casi cualquier elemento de texto */
-html, body, [class^="css"], [class*="css"] {
-    color: #ffffff;
+/* TITULOS */
+h1, h2, h3, h4, h5, h6 {
+    color: white !important;
 }
 
-/* Tabs más legibles */
+/* LABELS DE SELECTBOX, SLIDER, RADIO, CHECKBOX */
+label, .stSelectbox label, .stSlider label, .css-1n76uvr, .css-q8sbsg {
+    color: white !important;
+}
+
+/* TABS */
 .stTabs [data-baseweb="tab"] {
-    color: #ffffff;
+    color: white !important;
     font-weight: 600;
 }
+
+.stTabs [data-baseweb="tab"]:hover {
+    color: #e5e5e5 !important;
+}
+
+/* MÉTRICAS */
+.stMetric label, .stMetric div {
+    color: white !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
-# -------- TÍTULO + LOGO --------
+# ---------------- TÍTULO + LOGO ----------------
 col_title, col_logo = st.columns([0.85, 0.15])
+
 with col_title:
     st.title("🏈 Dashboard de Análisis de Partidos - NFL")
 
@@ -40,7 +60,7 @@ with col_logo:
     except Exception:
         pass
 
-# -------- CARGA DE DATOS --------
+# ---------------- CARGA DE DATOS ----------------
 @st.cache_data
 def load_data():
     file_name = "NFL_scores.csv"
@@ -50,21 +70,19 @@ def load_data():
 
     df = pd.read_csv(file_name)
 
-    # columnas básicas
-    needed = [
+    required = [
         "score_home", "score_away", "season", "week",
         "over_under_line", "spread_favorite", "team_home", "team_away"
     ]
-    missing = [c for c in needed if c not in df.columns]
+    missing = [c for c in required if c not in df.columns]
     if missing:
-        st.error(f"Faltan columnas: {', '.join(missing)}")
+        st.error(f"Faltan columnas esenciales: {', '.join(missing)}")
         raise SystemExit("Columnas faltantes")
 
     for c in ["season", "week", "score_home", "score_away",
               "over_under_line", "spread_favorite"]:
         df[c] = pd.to_numeric(df[c], errors="coerce")
 
-    # fechas
     if "schedule_date" in df.columns:
         df["schedule_date"] = pd.to_datetime(df["schedule_date"], errors="coerce")
         df["Year"] = df["schedule_date"].dt.year
@@ -75,7 +93,6 @@ def load_data():
         df["Month-Year"] = df["season"].astype(str)
         df["Week"] = df["week"]
 
-    # métricas básicas
     df["total_points"] = df["score_home"] + df["score_away"]
     df["margin_home"] = df["score_home"] - df["score_away"]
 
@@ -95,12 +112,12 @@ def load_data():
 
 df = load_data()
 
-# -------- KPI INTERACTIVO --------
+# ---------------- KPI INTERACTIVO ----------------
 st.header("📊 KPI Interactivo")
 
-col_range, col_kpi = st.columns([0.6, 0.4])
+kpi_col1, kpi_col2 = st.columns([0.6, 0.4])
 
-with col_range:
+with kpi_col1:
     season_min = int(df["season"].min())
     season_max = int(df["season"].max())
     rango_temp = st.slider(
@@ -111,47 +128,56 @@ with col_range:
     )
     df_kpi = df[df["season"].between(rango_temp[0], rango_temp[1])]
 
-with col_kpi:
+with kpi_col2:
     kpi_option = st.selectbox(
         "KPI a mostrar",
         ["Total Games", "Avg Total Points/Game", "Home Win Rate", "Close Games (±3 pts)"]
     )
 
 if df_kpi.empty:
-    st.warning("No hay partidos en el rango seleccionado.")
+    st.warning("No hay partidos en el rango de temporadas seleccionado.")
 else:
     if kpi_option == "Total Games":
-        value = len(df_kpi)
-        text = f"{value:,}"
+        val = len(df_kpi)
+        texto = f"{val:,}"
         desc = "Número de partidos en el rango seleccionado."
     elif kpi_option == "Avg Total Points/Game":
-        value = df_kpi["total_points"].mean()
-        text = f"{value:.1f}"
+        val = df_kpi["total_points"].mean()
+        texto = f"{val:.1f}"
         desc = "Promedio de puntos totales por partido."
     elif kpi_option == "Home Win Rate":
-        value = (df_kpi["margin_home"] > 0).mean() * 100
-        text = f"{value:.1f}%"
+        val = (df_kpi["margin_home"] > 0).mean() * 100
+        texto = f"{val:.1f}%"
         desc = "Porcentaje de victorias del local."
     else:
-        value = (df_kpi["margin_home"].abs() <= 3).mean() * 100
-        text = f"{value:.1f}%"
+        val = (df_kpi["margin_home"].abs() <= 3).mean() * 100
+        texto = f"{val:.1f}%"
         desc = "Porcentaje de partidos decididos por 3 puntos o menos."
 
-    st.metric(kpi_option, text)
+    st.metric(kpi_option, texto)
     st.caption(desc)
 
 st.markdown("---")
 
-# -------- TABS --------
+# ---------------- TABS ----------------
 tab1, tab2, tab3 = st.tabs(
     ["Enfrentamientos", "Performance Over Time", "Stadium Analysis"]
 )
 
+color_tab1 = "#DC2626"
+color_tab2 = "#2563EB"
+color_tab3 = "#16A34A"
+
 # ===== TAB 1: ENFRENTAMIENTOS =====
 with tab1:
-    st.markdown("### Enfrentamientos entre dos equipos")
+    st.markdown(
+        f"<div style='background-color:{color_tab1}; padding:6px 10px; border-radius:6px;'>"
+        "<b>Enfrentamientos entre dos equipos</b></div>",
+        unsafe_allow_html=True
+    )
 
     teams = sorted(pd.unique(pd.concat([df["team_home"], df["team_away"]], ignore_index=True)))
+
     c1, c2 = st.columns(2)
     with c1:
         team_a = st.selectbox("Equipo A", teams, index=0)
@@ -205,28 +231,46 @@ with tab1:
 
 # ===== TAB 2: PERFORMANCE OVER TIME =====
 with tab2:
-    st.markdown("### Performance Over Time")
+    st.markdown(
+        f"<div style='background-color:{color_tab2}; padding:6px 10px; border-radius:6px;'>"
+        "<b>Performance Over Time</b></div>",
+        unsafe_allow_html=True
+    )
 
     c1, c2 = st.columns(2)
     with c1:
-        group_col = st.selectbox("Agrupar por", ["Month-Year", "Week", "Year"])
+        tgrp = st.selectbox("Agrupar por", ["Month-Year", "Week", "Year"])
     with c2:
-        metric = st.selectbox("KPI", ["Games", "Avg Total Points"], key="time_kpi")
+        metric = st.selectbox(
+            "KPI",
+            ["Games", "Avg Total Points"],
+            key="time_kpi"
+        )
 
-    df_time = df.groupby(group_col).agg(
+    df_time = df.groupby(tgrp).agg(
         Games=("total_points", "count"),
         AvgTotalPoints=("total_points", "mean")
     ).reset_index()
 
     y_col = "Games" if metric == "Games" else "AvgTotalPoints"
-    fig = px.line(df_time, x=group_col, y=y_col, title=f"{metric} por {group_col}", markers=True)
+
+    fig = px.line(df_time, x=tgrp, y=y_col, title=f"{metric} por {tgrp}", markers=True)
     st.plotly_chart(fig, use_container_width=True)
 
 # ===== TAB 3: STADIUM ANALYSIS =====
 with tab3:
-    st.markdown("### Stadium Analysis")
+    st.markdown(
+        f"<div style='background-color:{color_tab3}; padding:6px 10px; border-radius:6px;'>"
+        "<b>Stadium Analysis</b></div>",
+        unsafe_allow_html=True
+    )
 
-    stat_label = st.selectbox("KPI", ["Games", "Avg Total Points"], key="stadium_kpi")
+    stat_label = st.selectbox(
+        "KPI",
+        ["Games", "Avg Total Points"],
+        key="stadium_kpi"
+    )
+
     kpi_col = "Games" if stat_label == "Games" else "AvgTotalPoints"
 
     df_geo = df.groupby("stadium").agg(
@@ -235,11 +279,11 @@ with tab3:
     ).reset_index()
 
     df_geo = df_geo.sort_values(kpi_col, ascending=False).head(20)
-    fig2 = px.bar(df_geo, x="stadium", y=kpi_col,
-                  title=f"{stat_label} por Stadium",
-                  color=kpi_col, color_continuous_scale="Viridis")
+
+    fig2 = px.bar(
+        df_geo, x="stadium", y=kpi_col,
+        title=f"{stat_label} por Stadium",
+        color=kpi_col, color_continuous_scale="Viridis"
+    )
     fig2.update_layout(xaxis_tickangle=-45)
     st.plotly_chart(fig2, use_container_width=True)
-
-
-
