@@ -155,7 +155,6 @@ else:
         desc = "Porcentaje de partidos decididos por 3 puntos o menos."
 
     st.metric(kpi_option, texto)
-    st.caption(desc)
 
 st.markdown("---")
 
@@ -218,7 +217,6 @@ with tab1:
             c2.metric(f"Victorias {team_a}", wins_a)
             c3.metric(f"Victorias {team_b}", wins_b)
             c4.metric("Empates", ties)
-            st.caption(f"Puntos promedio por partido: {avg_pts:.1f}")
 
             cols = []
             if "schedule_date" in h2h.columns:
@@ -287,5 +285,6 @@ with tab3:
     )
     fig2.update_layout(xaxis_tickangle=-45)
     st.plotly_chart(fig2, use_container_width=True)
+
 
 
