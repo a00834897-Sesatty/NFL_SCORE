@@ -288,9 +288,11 @@ with tab3:
     st.plotly_chart(fig2, use_container_width=True)
 
 with tab4:
-    st.subheader ("tab nuevo")
-    st.dataframe(df.head())
-    
+    st.markdown(
+        f"<div style='background-color:{color_tab4}; padding:6px 10px; border-radius:6px;'>"
+        "<b>Enfrentamientos entre dos equipos</b></div>",
+        unsafe_allow_html=True
+    )
 
-
-
+st.subheader("tab nuevo")
+st.dataframe(df.head())
