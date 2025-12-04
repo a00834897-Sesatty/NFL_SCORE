@@ -285,11 +285,3 @@ with tab3:
     )
     fig2.update_layout(xaxis_tickangle=-45)
     st.plotly_chart(fig2, use_container_width=True)
-
-with tab4:
-    st.header("Resumen")
-    st.dataframe(df.head(10))
-
-    metrica1 = st.selectbox("year")
-    st.subheader(f"el año seleccionado es:{year}
-
