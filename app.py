@@ -159,8 +159,8 @@ else:
 st.markdown("---")
 
 # ---------------- TABS ----------------
-tab1, tab2, tab3, tab4 = st.tabs(
-    ["Enfrentamientos", "Performance Over Time", "Stadium Analysis", "Resumen"]
+tab1, tab2, tab3 = st.tabs(
+    ["Enfrentamientos", "Performance Over Time", "Stadium Analysis"]
 )
 
 color_tab1 = "#DC2626"
@@ -285,3 +285,4 @@ with tab3:
     )
     fig2.update_layout(xaxis_tickangle=-45)
     st.plotly_chart(fig2, use_container_width=True)
+
