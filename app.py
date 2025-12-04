@@ -291,6 +291,7 @@ with tab4:
     st.dataframe(df.head(10))
 
 
-    figura = px.bar(df, x=season, y=score)
+    figura = px.bar(df, x=season, y=score_home)
+
 
 
