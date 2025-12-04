@@ -290,8 +290,6 @@ with tab4:
     st.header("Resumen")
     st.dataframe(df.head(10))
 
-
-    figura = px.bar(df, x=season, y=score_home)
-
-
+    metrica1 = st.selectbox("year")
+    st.subheader(f"el año seleccionado es:{year}
 
