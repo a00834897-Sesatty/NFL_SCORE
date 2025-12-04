@@ -166,7 +166,6 @@ tab1, tab2, tab3 = st.tabs(
 color_tab1 = "#DC2626"
 color_tab2 = "#2563EB"
 color_tab3 = "#16A34A"
-color_tab4 = "green"
 
 # ===== TAB 1: ENFRENTAMIENTOS =====
 with tab1:
@@ -191,7 +190,7 @@ with tab1:
             ((df["team_home"] == team_a) & (df["team_away"] == team_b)) |
             ((df["team_home"] == team_b) & (df["team_away"] == team_a))
         )
-        h2h = df[mask].copy()
+        h2h = df[mask].copy()   #h2h df enfrentamiento de equipos
 
         if h2h.empty:
             st.warning(f"No hay partidos entre {team_a} y {team_b}.")
@@ -286,4 +285,5 @@ with tab3:
     )
     fig2.update_layout(xaxis_tickangle=-45)
     st.plotly_chart(fig2, use_container_width=True)
+
 
