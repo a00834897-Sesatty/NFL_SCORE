@@ -287,8 +287,10 @@ with tab3:
     st.plotly_chart(fig2, use_container_width=True)
 
 with tab4:
-    st.header("resumen")
+    st.header("Resumen")
     st.dataframe(df.head(10))
 
+
+    figura = px.bar(df, x=season, y=score)
 
 
