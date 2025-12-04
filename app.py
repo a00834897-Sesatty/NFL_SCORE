@@ -159,13 +159,14 @@ else:
 st.markdown("---")
 
 # ---------------- TABS ----------------
-tab1, tab2, tab3 = st.tabs(
-    ["Enfrentamientos", "Performance Over Time", "Stadium Analysis"]
+tab1, tab2, tab3, tab4 = st.tabs(
+    ["Enfrentamientos", "Performance Over Time", "Stadium Analysis","Tab nuevo"]
 )
 
 color_tab1 = "#DC2626"
 color_tab2 = "#2563EB"
 color_tab3 = "#16A34A"
+color_tab4 = "green"
 
 # ===== TAB 1: ENFRENTAMIENTOS =====
 with tab1:
@@ -285,6 +286,11 @@ with tab3:
     )
     fig2.update_layout(xaxis_tickangle=-45)
     st.plotly_chart(fig2, use_container_width=True)
+
+with tab4:
+    st.subheader ("tab nuevo")
+    st.dataframe(df.head())
+    
 
 
 
